@@ -5,6 +5,7 @@
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "renderer.h"
 
 using namespace raze;
 
@@ -56,9 +57,9 @@ int main()
 
     Config config;
     config.aspect_ratio      = 16.0 / 9.0;
-    config.image_width       = 1280;
-    config.samples_per_pixel = 1;
-    config.max_depth         = 20;
+    config.image_width       = 400;
+    config.samples_per_pixel = 50;
+    config.max_depth         = 25;
 
     config.vertival_fov      = 20;
     config.look_from         = Vector3f(13,2,3);
@@ -93,9 +94,13 @@ int main()
     // config.defocus_angle = 10.f;
     // config.focus_distance = (config.look_from - config.look_at).length();
 
-    raze::Camera camera(config);
-    camera.render(world);
-    camera.saveToPPM("final");
+    // raze::Camera camera(config);
+    // camera.render(world);
+    // camera.saveToPPM("final");
     
+    raze::Renderer renderer(config);
+    renderer.render(world);
+    renderer.saveToPPM("multi-threaded");
+
     return 0;
 }
