@@ -5,7 +5,7 @@
 
 #include "config.h"
 #include "color.h"
-#include "cam.h"
+#include "camera.h"
 #include "hittable.h"
 
 namespace raze
@@ -13,7 +13,7 @@ namespace raze
     class Renderer {
     public:
         Renderer(const Config& config);
-        void render(const Hittable& world);
+        void render(const Hittable& world, bool multithreaded);
         bool saveToPPM(const std::string& name) const;
 
     private:
@@ -26,7 +26,7 @@ namespace raze
 
     private:
         Config    _Config;
-        Cam       _Camera;
+        Camera    _Camera;
         int       _ImageWidth;
         int       _ImageHeight;
         float     _PixelSampleScale;

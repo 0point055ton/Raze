@@ -11,7 +11,6 @@ add_executable(raze)
 target_sources(raze PRIVATE
     src/main.cpp
     src/interval.cpp
-    src/camera.cpp
     src/color.cpp
     src/random.cpp
     src/renderer.cpp

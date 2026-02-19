@@ -13,27 +13,58 @@ namespace raze
         _ImageHeight = int(_ImageWidth / _Config.aspect_ratio);
         _ImageHeight = (_ImageHeight < 1) ? 1 : _ImageHeight;
         _PixelSampleScale = 1.f / _Config.samples_per_pixel;
+        _FrameBuffer.reserve(_ImageHeight * _ImageWidth);
     }
 
-    void Renderer::render(const Hittable& world) 
+    void Renderer::render(const Hittable& world, bool multithreaded) 
     {
+        unsigned int system_threads = std::thread::hardware_concurrency();
+        if (multithreaded && system_threads < 3)
+        {
+            std::cout << "Warning: Not enough threads" << std::endl;
+            multithreaded = false;
+        }
+        unsigned int thread_count = system_threads - 1;
+
         auto start_time = std::chrono::system_clock::now();
 
-        std::vector<Color> result1;
-        std::vector<Color> result2;
+        if (multithreaded)
+        {
+            std::cout << "Running with " << thread_count << " threads\n";
 
-        result1.reserve(370);
-        result2.reserve(370);
-
-        std::thread worker1(&Renderer::renderRegion, this, std::ref(world), std::ref(result1), 0, 360);
-        std::thread worker2(&Renderer::renderRegion, this, std::ref(world), std::ref(result2), 361, 720);
-
-        worker1.join();
-        worker2.join();
-        
-        _FrameBuffer.reserve(result1.size() + result2.size());
-        _FrameBuffer.insert(_FrameBuffer.end(), result1.begin(), result1.end());
-        _FrameBuffer.insert(_FrameBuffer.end(), result2.begin(), result2.end());
+            unsigned int base_work = _ImageHeight / thread_count;
+            unsigned int leftover_work = _ImageHeight % thread_count;
+            
+            std::vector<std::vector<Color>> results(thread_count);
+            std::vector<std::thread> workers;
+            
+            for (unsigned int i = 0; i < thread_count; ++i)
+            {
+                unsigned int current_work = i < leftover_work ? base_work + 1 : base_work;
+                unsigned int job_start = i * base_work + std::min(i, leftover_work);
+                unsigned int job_end = job_start + current_work;
+                
+                results[i].reserve(job_end - job_start);
+                
+                std::thread worker(&Renderer::renderRegion, this, std::ref(world), std::ref(results[i]), job_start, job_end);
+                workers.push_back(std::move(worker));
+            }
+            
+            for (std::thread& worker : workers)
+            {
+                worker.join();
+            }
+            
+            for (std::vector<Color>& res : results)
+            {
+                _FrameBuffer.insert(_FrameBuffer.end(), res.begin(), res.end());
+            }
+        }
+        else
+        {
+            std::cout << "Running single-threaded\n";
+            renderRegion(world, _FrameBuffer, 0, _ImageHeight);
+        }
 
         auto end_time = std::chrono::system_clock::now();
         auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
