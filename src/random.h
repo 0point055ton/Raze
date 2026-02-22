@@ -20,6 +20,11 @@ namespace raze
         {
             return min + (max - min) * getFloat();
         }
+
+        static int getInt(int min, int max)
+        {
+            return int(getFloat(min, max + 1.f));
+        }
         
         static Vector3f getVector3f()
         {

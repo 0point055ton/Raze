@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "aabb.h"
 #include "interval.h"
 #include "ray.h"
 
@@ -30,6 +31,7 @@ namespace raze
     public:
         virtual ~Hittable() = default;
         virtual bool hit(const Ray& ray, Interval<float> ray_t, HitInfo& record) const = 0;
+        virtual AABB boundingBox() const = 0;
     };    
 }
 

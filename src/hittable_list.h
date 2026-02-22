@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "aabb.h"
 #include "hittable.h"
 
 using std::make_shared;
@@ -17,7 +18,11 @@ namespace raze
         HittableList(shared_ptr<Hittable> object) { add(object); };
 
         void clear() { objects.clear(); }
-        void add(shared_ptr<Hittable> object) { objects.push_back(object); }
+        void add(shared_ptr<Hittable> object) 
+        { 
+            objects.push_back(object); 
+            _BBox = AABB(_BBox, object->boundingBox());
+        }
 
         bool hit(const Ray& ray, Interval<float> ray_t, HitInfo& record) const override
         {
@@ -38,7 +43,13 @@ namespace raze
             return hit_anything;
         }
 
+        AABB boundingBox() const
+        {
+            return _BBox;
+        }
+
     public:
+        AABB _BBox;
         std::vector<shared_ptr<Hittable>> objects;
     };
 }

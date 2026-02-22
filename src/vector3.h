@@ -46,6 +46,17 @@ namespace raze
             return x * x + y * y + z * z;
         }
 
+        T at(int axis) const
+        {
+            switch (axis)
+            {
+            case 0: return x; break;
+            case 1: return y; break;
+            case 2: return z; break;
+            default: return x; break;
+            }
+        }
+
         bool nearZero() const
         {
             T s = 1e-8;

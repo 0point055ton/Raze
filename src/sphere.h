@@ -9,7 +9,10 @@ namespace raze
     public:
         Sphere(const Vector3f& center, float radius, shared_ptr<Material> material) :
             _Center(center), _Radius(std::fmaxf(0.f, radius)), _Material(material)
-        {}
+        {
+            Vector3f radius_vector(radius);
+            _BBox = AABB(center - radius_vector, center + radius_vector);
+        }
 
         bool hit(const Ray& ray, Interval<float> ray_t, HitInfo& record) const override
         {
@@ -41,8 +44,14 @@ namespace raze
             return true;
         }
 
+        AABB boundingBox() const override
+        {
+            return _BBox;
+        }
+
     private:
         Vector3f _Center;
+        AABB     _BBox;
         float    _Radius;
         std::shared_ptr<Material> _Material;
     };

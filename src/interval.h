@@ -11,6 +11,12 @@ namespace raze
         Interval() : min(INF), max(-INF) {}
         Interval(T min, T max) : min(min), max(max) {}
 
+        Interval(const Interval<T>& a, const Interval<T>& b) 
+        {
+            min = a.min <= b.min ? a.min : b.min;
+            max = a.max >= b.max ? a.max : b.max;
+        }
+
         T size() const { return max - min; }
         bool contains(T value) const { return value >= min && value <= max; }
         bool surrounds(T value) const { return value > min && value < max; }
@@ -20,6 +26,12 @@ namespace raze
             if (value < min) return min;
             if (value > max) return max;
             return value;
+        }
+
+        Interval<T> expand(T delta) const
+        {
+            T padding = delta / 2.f;
+            return Interval<T>(min - padding, max + padding);
         }
 
     public:

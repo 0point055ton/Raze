@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 
+#include "bvh.h"
 #include "hittable_list.h"
 #include "sphere.h"
 #include "material.h"
@@ -59,6 +60,8 @@ int main()
     auto material3 = make_shared<Metal>(Vector3f(0.7f, 0.6f, 0.5f), 0.f);
     world.add(make_shared<Sphere>(Vector3f(4.f, 1.f, 0.f), 1.f, material3));
 
+    world = HittableList(std::make_shared<BVH>(world));
+
     Config config;
     config.aspect_ratio      = 16.f / 9.f;
     config.image_width       = 1280;
@@ -74,7 +77,7 @@ int main()
 
     raze::Renderer renderer(config);
     renderer.render(world, true);
-    renderer.saveToPPM("final");
+    renderer.saveToPPM("bvh_optimization");
 
     return 0;
 }
