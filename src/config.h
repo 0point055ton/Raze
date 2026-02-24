@@ -14,6 +14,7 @@ namespace raze
         float vertival_fov = 60.f;
         float defocus_angle = 0.f;
         float focus_distance = 10.f;
+        bool shade_with_normals = false;
         Vector3f look_from;
         Vector3f look_at;
     };

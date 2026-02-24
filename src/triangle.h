@@ -1,16 +1,16 @@
-#ifndef QUAD_H
-#define QUAD_H
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 
 #include "hittable.h"
 
 namespace raze
 {
-    class Quad : public Hittable {
+    class Triangle : public Hittable {
     public:
-        Quad(const Vector3f& origin, const Vector3f& u, const Vector3f& v, std::shared_ptr<Material> material)
-            : _Origin(origin), _U(u), _V(v), _Material(material) 
+        Triangle(const Vector3f& a, const Vector3f& b, const Vector3f& c, std::shared_ptr<Material> material)
+            : _Origin(a), _U(b - a), _V(c - a), _Material(material) 
         { 
-            Vector3f n = cross(u, v);
+            Vector3f n = cross(_U, _V);
             _Normal = unitVector(n);
             _D = dot(_Normal, _Origin);
             _W = n / dot(n, n);
@@ -57,15 +57,12 @@ namespace raze
 
         virtual bool isInterior(float alpha, float beta, HitInfo& record) const
         {
-            // Only needed when doing UV mapping
             (void)record;
 
-            Interval<float> unit_interval(0.f, 1.f);
+            if (alpha > 0.f && beta > 0.f && alpha + beta < 1.f)
+                return true;
 
-            if (!unit_interval.contains(alpha) || !unit_interval.contains(beta))
-                return false;
-
-            return true;
+            return false;
         }
         
     private:
@@ -79,4 +76,4 @@ namespace raze
     };
 }
 
-#endif // QUAD_H
+#endif // TRIANGLE_H

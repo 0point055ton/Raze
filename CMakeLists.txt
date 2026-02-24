@@ -18,4 +18,5 @@ target_sources(raze PRIVATE
 
 target_include_directories(raze PRIVATE 
     ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/vendor
 )

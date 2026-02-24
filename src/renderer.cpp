@@ -5,6 +5,14 @@
 #include "renderer.h"
 #include "random.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image/stb_image_write.h"
+
+#pragma GCC diagnostic pop
+
 namespace raze
 {
     Renderer::Renderer(const Config& config) : _Config(config), _Camera(config)
@@ -103,7 +111,17 @@ namespace raze
             Vector3f attenuation;
 
             if (record.material->scatter(ray, record, attenuation, scattered))
+            {
+                if (_Config.shade_with_normals)
+                {
+                    return 0.5f * Vector3f(record.normal.x + 1.f, record.normal.y + 1.f, record.normal.z + 1.f);
+                }
+
                 return attenuation * rayColor(scattered, depth - 1, world);
+            }
+
+            // if (record.material->scatter(ray, record, attenuation, scattered))
+                // return attenuation * rayColor(scattered, depth - 1, world);
 
             return Vector3f(0.f);
         }
@@ -162,6 +180,21 @@ namespace raze
         std::cout << "Saving took " << elapsed_time.count() << " ms" << std::endl;
         file.close();
 
+        return true;
+    }
+
+    bool Renderer::saveToJPEG(const std::string& name, int channels) const
+    {
+        unsigned char* data = new unsigned char[_ImageWidth * _ImageHeight * channels];
+        for (size_t i = 0; i < _FrameBuffer.size(); ++i)
+        {
+            data[i * channels]     = (unsigned char)_FrameBuffer[i].r;
+            data[i * channels + 1] = (unsigned char)_FrameBuffer[i].g;
+            data[i * channels + 2] = (unsigned char)_FrameBuffer[i].b;
+        }
+        stbi_write_jpg(name.c_str(), _ImageWidth, _ImageHeight, channels, data, 100);
+        delete[] data;
+        std::cout << "Saving to file: " << name << ".jpg\n";
         return true;
     }
 }
