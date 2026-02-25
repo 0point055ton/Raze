@@ -152,6 +152,64 @@ namespace raze
         return _Camera.look_from + (v.x * _Camera.defocus_disc_u) + (v.y * _Camera.defocus_disc_v);
     }
 
+    bool Renderer::saveToFile() const
+    {
+        switch (_Config.format)
+        {
+        case ImageFormat::PPM:
+            {
+                std::ofstream file(_Config.image_name);
+                if (!file.is_open())
+                {
+                    std::cout << "Could not open file: " << _Config.image_name << "\n";
+                    return false;
+                }
+                else
+                {
+                    std::cout << "Saving to file: " << _Config.image_name << ".ppm\n";
+                }
+
+                file << "P3\n" << _ImageWidth << " " << _ImageHeight << "\n255\n";
+
+                auto start_time = std::chrono::system_clock::now();
+
+                for (size_t i = 0; i < _FrameBuffer.size(); ++i)
+                {
+                    file << _FrameBuffer[i] << "\n";
+                }
+
+                auto end_time = std::chrono::system_clock::now();
+                auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+                std::cout << "Saving took " << elapsed_time.count() << " ms" << std::endl;
+                file.close();
+
+                return true;
+            }
+            break;
+        
+        case ImageFormat::JPG:
+            {
+                unsigned char* data = new unsigned char[_ImageWidth * _ImageHeight * _Config.channel_number];
+                for (size_t i = 0; i < _FrameBuffer.size(); ++i)
+                {
+                    data[i * _Config.channel_number]     = (unsigned char)_FrameBuffer[i].r;
+                    data[i * _Config.channel_number + 1] = (unsigned char)_FrameBuffer[i].g;
+                    data[i * _Config.channel_number + 2] = (unsigned char)_FrameBuffer[i].b;
+                }
+                stbi_write_jpg(_Config.image_name.c_str(), _ImageWidth, _ImageHeight, _Config.channel_number, data, 100);
+                delete[] data;
+                return true;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        return true;
+    }
+
     bool Renderer::saveToPPM(const std::string& name) const
     {
         std::ofstream file(name);

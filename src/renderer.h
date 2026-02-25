@@ -14,6 +14,7 @@ namespace raze
     public:
         Renderer(const Config& config);
         void render(const Hittable& world, bool multithreaded);
+        bool saveToFile() const;
         bool saveToPPM(const std::string& name) const;
         bool saveToJPEG(const std::string& name, int channels) const;
 
