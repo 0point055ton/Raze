@@ -21,13 +21,15 @@ int main()
 
     HittableList world;
 
-    std::shared_ptr<Material> red = std::make_shared<Lambertian>(Vector3f(1.0f, 0.2f, 0.2f));
-    std::shared_ptr<Material> blue = std::make_shared<Lambertian>(Vector3f(0.2f, 0.2f, 1.0f));
-    std::shared_ptr<Material> metal = std::make_shared<Metal>(Vector3f(0.7f, 0.6f, 0.5f), 0.f);
+    Vector3f purple_rgb = vectorFromColor(97, 70, 138);
+    Vector3f bluish_rgb = vectorFromColor(72, 40, 168);
+    std::shared_ptr<Material> red = std::make_shared<Lambertian>(purple_rgb);
+    std::shared_ptr<Material> metal = std::make_shared<Metal>(Vector3f(0.7f, 0.6f, 0.5f), 0.1f);
+    std::shared_ptr<Material> fuzzy_metal = std::make_shared<Metal>(bluish_rgb, 0.0f);
 
     obj::Load obj(true);
 
-    std::string filename = "skull/skull.obj";
+    std::string filename = "cat/cat.obj";
 
     if (!obj.load(filename))
     {
@@ -47,14 +49,16 @@ int main()
             Vector3f b(obj.vertex.v[p1 * 3], obj.vertex.v[p1 * 3 + 1], obj.vertex.v[p1 * 3 + 2]);
             Vector3f c(obj.vertex.v[p2 * 3], obj.vertex.v[p2 * 3 + 1], obj.vertex.v[p2 * 3 + 2]);
 
-            world.add(std::make_shared<Triangle>(a, b, c, metal));
+            world.add(std::make_shared<Triangle>(a, b, c, red));
 
             face += size;
         }
     }
 
-    world.add(std::make_shared<Sphere>(Vector3f(-10.f, 0.f, 0.f), 5.f, red));
-    world.add(std::make_shared<Sphere>(Vector3f(10.f, 0.f, 0.f), 5.f, blue));
+    world.add(std::make_shared<Sphere>(Vector3f(-4.5f, 1.f - 1.075f, -4.5f), 1.f, fuzzy_metal));
+    world.add(std::make_shared<Sphere>(Vector3f(4.5f, 1.f - 1.075f, -4.5f), 1.f, fuzzy_metal));
+    
+    world.add(std::make_shared<Quad>(Vector3f(-50.f,-1.075f, 50.f), Vector3f(100.f, 0.f, 0.f), Vector3f(0.f, 0.f,-100.f), metal));
 
     world = HittableList(std::make_shared<BVH>(world));
 
