@@ -17,7 +17,7 @@ Raze is a minimal ray tracer that renders photorealistic images using pure CPU c
 
 Below is a sample render produced by Raze:
 
-![Image rendered with Raze](readme/skull_render.jpg "Example render")
+![Image rendered with Raze](readme/cat_render.jpg "Example render")
 
 ## Getting Started
 
@@ -49,22 +49,22 @@ make
 ```
 ./raze
 ```
-* The rendered image will be saved to file according to configutation.json. Example configuration used to render skull above:
+* The rendered image will be saved to file according to configutation.json. Example configuration used to render image above:
 ```
 {
     "config":
     {
         "aspect_ratio": 1.777777778,
         "image_width": 1280,
-        "samples_per_pixel": 500,
+        "samples_per_pixel": 1000,
         "max_depth" : 50,
         "vertival_fov": 40.0,
         "look_from": { "x": 0.0, "y": 0.0, "z": 5.0 },
         "look_at": { "x": 0.0, "y": -0.2, "z": 0.0 },
         "defocus_angle": 0.0,
         "focus_distance": 10.0,
-        "shade_with_normals": true,
-        "image_name": "skull_render",
+        "shade_with_normals": false,
+        "image_name": "cat_mirror",
         "image_format": "jpg",
         "channel_number": 3,
         "multithreading": true
