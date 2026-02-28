@@ -12,10 +12,12 @@ Raze is a minimal ray tracer that renders photorealistic images using pure CPU c
 * Anti-aliasing
 * Multithreaded rendering
 * No external graphics libraries
+* Wavefront .obj file support
+* Configuration loaded from JSON file
 
 Below is a sample render produced by Raze:
 
-![Image rendered with Raze](readme/final_render.jpg "Final render")
+![Image rendered with Raze](readme/skull_render.jpg "Example render")
 
 ## Getting Started
 
@@ -24,7 +26,11 @@ Below is a sample render produced by Raze:
 * C++20 compatible compiler
 * CMake
 
-No external libraries are required.
+Project uses following external libraries:
+
+* JSON for Modern C++ by Niels Lohmann
+* stb_image library by Sean Barrett
+* Wavefront OBJ parser C++ 11 by StefanJohnsen
 
 ### Building the Project
 
@@ -43,9 +49,27 @@ make
 ```
 ./raze
 ```
-* The rendered image will be saved as PPM file:
+* The rendered image will be saved to file according to configutation.json. Example configuration used to render skull above:
 ```
-final.ppm
+{
+    "config":
+    {
+        "aspect_ratio": 1.777777778,
+        "image_width": 1280,
+        "samples_per_pixel": 500,
+        "max_depth" : 50,
+        "vertival_fov": 40.0,
+        "look_from": { "x": 0.0, "y": 0.0, "z": 5.0 },
+        "look_at": { "x": 0.0, "y": -0.2, "z": 0.0 },
+        "defocus_angle": 0.0,
+        "focus_distance": 10.0,
+        "shade_with_normals": true,
+        "image_name": "skull_render",
+        "image_format": "jpg",
+        "channel_number": 3,
+        "multithreading": true
+    }
+}
 ```
 
 ## Reference
